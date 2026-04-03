@@ -1440,12 +1440,7 @@
               </div>
 
               <div>
-                <div class="callout">
-                  <div class="callout-quote">A 20-year impact report covering 20,000+ scholars: not just a data product, but a narrative of how international exchange shapes people's lives across cultures and careers.</div>
-                  <div class="callout-cite">Gilman 20-Year Impact Report</div>
-                </div>
-
-                <div class="highlight-box" style="margin-top:24px;">
+                <div class="highlight-box">
                   <h4>Flagship Output: Gilman 20-Year Impact Report</h4>
                   <p>Surveyed over 20,000 scholars and conducted 10 in-depth narrative interviews to document what a generation of international exchange had built. The report combined quantitative breadth with rich qualitative storytelling, designed to resonate with donors, policymakers, and the public alike.</p>
                 </div>
@@ -1567,9 +1562,20 @@
 
 </div><!-- /magazine-container -->
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
   let currentPage = 0;
   const totalPages = 9;
+
+  function goToPage(n) {
+    document.getElementById('page-' + currentPage).classList.remove('active');
+    document.getElementById('toc-' + currentPage).classList.remove('active');
+    currentPage = n;
+    document.getElementById('page-' + currentPage).classList.add('active');
+    document.getElementById('toc-' + currentPage).classList.add('active');
+    const pagesArea = document.querySelector('.pages-area');
+    if (pagesArea) pagesArea.scrollTop = 0;
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
 
   function openMagazine() {
     const cover = document.getElementById('coverCard');
@@ -1577,18 +1583,14 @@
     const mag = document.getElementById('magazineOpen');
     const hint = document.querySelector('.cover-hint');
 
-    // Hide hint immediately
     if (hint) hint.style.display = 'none';
     wrapper.style.pointerEvents = 'none';
 
-    // Show magazine immediately behind cover — no blank moment
     mag.style.display = 'block';
     goToPage(0);
 
-    // Float cover on top of magazine for the swing
     wrapper.classList.add('over-magazine');
 
-    // Swing cover open
     cover.style.transition = 'transform 0.42s cubic-bezier(0.4, 0, 0.15, 1)';
     cover.style.transform = 'rotateY(-170deg)';
 
@@ -1606,7 +1608,6 @@
     const wrapper = document.getElementById('coverWrapper');
     const cover = document.getElementById('coverCard');
 
-    // Fade magazine out immediately so content doesn't bleed behind the cover
     mag.style.transition = 'opacity 0.15s ease';
     mag.style.opacity = '0';
 
@@ -1615,11 +1616,33 @@
       mag.style.transition = '';
       mag.style.opacity = '';
 
-      // Now swing cover closed from open position
       cover.style.transition = 'none';
       cover.style.transform = 'rotateY(-170deg)';
-      wrapper.style.display = 'block';      wrapper.style.pointerEvents = 'none';
+      wrapper.style.display = 'block';
+      wrapper.style.pointerEvents = 'none';
       wrapper.classList.add('over-magazine');
 
       requestAnimationFrame(() => {
-        requestAnimationFrame(
+        requestAnimationFrame(() => {
+          cover.style.transition = 'transform 0.42s cubic-bezier(0.4, 0, 0.15, 1)';
+          cover.style.transform = 'rotateY(0deg)';
+        });
+      });
+
+      setTimeout(() => {
+        wrapper.classList.remove('over-magazine');
+        wrapper.style.pointerEvents = '';
+        cover.style.transform = '';
+        cover.style.transition = '';
+        const hint = document.querySelector('.cover-hint');
+        if (hint) hint.style.display = '';
+      }, 440);
+    }, 150);
+  }
+
+  document.getElementById('coverCard').addEventListener('click', function(e) {
+    if (!e.target.closest('.cover-open-btn')) openMagazine();
+  });
+</script>
+</body>
+</html>
